@@ -1,0 +1,5 @@
+matplotlib>=3.8
+openpyxl
+rich
+pandas>=2.2.2
+scipy>=1.14.0
