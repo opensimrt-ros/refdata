@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from mpl_toolkits.axes_grid1 import Divider, Size,  make_axes_locatable
 from importlib.metadata import version
+import os
 
 def check_ver(package, ver_requirements):
     ver_requirements_list = ver_requirements.split('.')
@@ -21,6 +22,15 @@ def check_ver(package, ver_requirements):
         raise Exception(f"requirements for {package} not met need {ver_requirements}, have {'.'.join(ver_list)}")
         
 check_ver('matplotlib', "3.8")
+
+def check_data(data_dir):
+    dirs_to_check = ["grf_data","id_data","so_data","ik_data"]
+    for some_dir in dirs_to_check:
+        if not os.path.exists(os.path.join(data_dir,some_dir)):
+            raise Exception(f"source data {some_dir} not found. graph generation with references will fail")
+    print("data found okay!")
+
+check_data(os.path.join(os.path.dirname(__file__),"../data"))
 
 import numpy as np
 import glob
