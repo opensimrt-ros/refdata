@@ -1,0 +1,15 @@
+The ground reaction force csv files are here:
+
+https://springernature.figshare.com/collections/GaitRec_A_large-scale_ground_reaction_force_dataset_of_healthy_and_impaired_gait/4788012/1
+
+you can get them with something like 
+
+wget https://springernature.figshare.com/ndownloader/files/22063185 
+
+but I downloaded it manually. it's easy to create a script to do this (you need to rename the files afterwards), but I won't spend time on this, since it is a one time off thing. 
+
+the dataset with the transitions is the same thing.
+
+you can get it with 
+
+wget https://springernature.figshare.com/ndownloader/files/28998063
