@@ -891,7 +891,11 @@ def construct_step_segmentation_vector(some_steps):
         new_step_def_list.append((ith_step[0], ithpone))
     return new_step_def_list
 from copy import copy
-def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", weight=None, plot_all=False, time_offset=0, plot_no_offset=True):
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+
+def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", weight=None, plot_all=False, time_offset=0, plot_no_offset=True,
+
+        figsize=(18,4)):
     
     grf = TrialData(grf_, remove_time_offset=False)
 
@@ -907,8 +911,9 @@ def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", 
     all_handles = []
     all_labels = []
     
-    fig, ax1 = plt.subplots(figsize=(18,4))
-        
+    fig, ax1 = plt.subplots(figsize=figsize)
+    ax1.xaxis.set_major_locator(MultipleLocator(1))    
+    ax1.xaxis.set_minor_locator(MultipleLocator(.1))    
     #plt.plot(x_ik,ik_2.data.ankle_angle_l/3.141592*180,"--", label="ankle l")
     #plt.plot(x_ik,ik_2.data.hip_flexion_l/3.141592*180,"--", label="hip x l")
     
