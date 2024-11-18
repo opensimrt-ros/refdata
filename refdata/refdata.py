@@ -41,7 +41,7 @@ from scipy.signal import argrelextrema
 from scipy.interpolate import PchipInterpolator
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import os
-import graph_params
+from . import graph_params
 
 import logging
 logger = logging.getLogger(__name__)
