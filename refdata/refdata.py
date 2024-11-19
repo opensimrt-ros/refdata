@@ -7,6 +7,7 @@ import matplotlib
 from mpl_toolkits.axes_grid1 import Divider, Size,  make_axes_locatable
 from importlib.metadata import version
 import os
+import traceback
 
 def check_ver(package, ver_requirements):
     ver_requirements_list = ver_requirements.split('.')
@@ -370,6 +371,7 @@ def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref
                         #    side = -1
                         all_curves_for_this_person.update({joint_or_muscle_complete_name:(list_of_curves, ref_name,side)})
             except:
+                traceback.print_exc()
                 print("failed in %s"%i_file)
                 pass
     return all_curves_for_this_person
@@ -519,8 +521,10 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                 else:
                     ref.plot_reference_name(ref_name["name"], scale=[1/99,ref_name["scale"][0]], 
                         num_cycles=1, avg_line=False, ax=ax)
-            actual_plot(X,Y,ax,side, plot_std, steps_label=steps_label,use_color_cycle=use_color_cycle)
-
+            try:
+                actual_plot(X,Y,ax,side, plot_std, steps_label=steps_label,use_color_cycle=use_color_cycle)
+            except:
+                logger.error(f"could not plot {name}, {ref_name['name']}")
             ax.set_title(ref_name["title"])
             ax.set(xlabel=f"\MakeUppercase {action_type} cycle [\%]", ylabel=ref_name["yaxis_name"])
             ax.set_ylim(ref_name["axes_limits"])
@@ -713,15 +717,16 @@ def reshape_curves(curves, PLOT_IT=False, lower_lim = None, upper_lim = None): #
 def normalize_steps(steps_, PLOT_IT=False):
     ## all steps will last 1.
     normalized_steps = []
-    for i, xi_yi in enumerate(steps_):
-        xi = np.linspace(0, 1, num=len(xi_yi[1]))
-        normalized_steps.append((xi,xi_yi[1].values))
-    if PLOT_IT:
-        for xi_yi in normalized_steps:
-            xi = xi_yi[0]
-            yi = xi_yi[1]
-            plt.plot(xi,yi)
-        plt.show()
+    if steps_:
+        for i, xi_yi in enumerate(steps_):
+            xi = np.linspace(0, 1, num=len(xi_yi[1]))
+            normalized_steps.append((xi,xi_yi[1].values))
+        if PLOT_IT:
+            for xi_yi in normalized_steps:
+                xi = xi_yi[0]
+                yi = xi_yi[1]
+                plt.plot(xi,yi)
+            plt.show()
     return normalized_steps
 #unit test:
 #normalize_steps(steps);
@@ -956,7 +961,7 @@ def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", 
         round_output = np.vectorize(lambda n: (np.round(n,2) if n else 1000))
         return round_output(st_seg).tolist()
     except:
-        return None
+        return []
 
 ##########################
 
