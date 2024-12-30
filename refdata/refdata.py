@@ -563,14 +563,28 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
 class TrialData:
     def __init__(self, file, remove_time_offset=True):
         print("file: %s"%file)
-        self.data = pd.read_csv (file, sep = '\t', skiprows=4)
+        ### find the size of the header:
+        header_line_count = 0
+        in_degrees=False
+        with open(file,'r') as f:
+            a_line = ''
+            while not 'endheader' in a_line:
+                a_line = f.readline()
+                if "inDegrees=" in a_line and "yes" in a_line:
+                    in_degrees=True
+                header_line_count+=1
+
+        self.data = pd.read_csv (file, sep = '\t', skiprows=header_line_count)
         if remove_time_offset: #remove time ofset
             self.data["time"] = self.data["time"] - self.data["time"][0]
         for col in self.data.columns:
             if col == "time":
                 continue
             else:
-                self.data[col] =  self.data[col]
+                if in_degrees:
+                    self.data[col] =  self.data[col]/180.0*np.pi
+                else:
+                    self.data[col] =  self.data[col]
 
     def trim_time(self, start_time, end_time):
         #df = df[(df['closing_price'] >= 99) & (df['closing_price'] <= 101)]
@@ -628,10 +642,11 @@ def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_p
     return xy_joint_or_muscles
 
 
-def clip_curve(time, curve_val, time_clips = [(0.1,1.13),(1.13,2.2),(2.2,3.26),(3.26,4.39),(4.39,5.55)], PLOT_IT=False):
+def clip_curve(time, curve_val, time_clips = [(0.1,1.13),(1.13,2.2),(2.2,3.26),(3.26,4.39),(4.39,5.55)], PLOT_IT=False, add_frame_offset=0, use_frame_clips=None):
     actions = []
     non_actions = []
-    if not time_clips:
+    if (not time_clips and not use_frame_clips) or (time_clips and use_frame_clips):
+        logger.error("I need either time_clips or use_frame_clips , but not both")
         return 
     def get_index_of_time(x):
         #time is always increasing so this is trivial:
@@ -639,24 +654,46 @@ def clip_curve(time, curve_val, time_clips = [(0.1,1.13),(1.13,2.2),(2.2,3.26),(
             if x_i>x:
                 return i
     #print(time_clips)
-    for i in range(len(time_clips)-1):
-        li = get_index_of_time(time_clips[i][0])
-        ui = get_index_of_time(time_clips[i][1])
+    if time_clips:
+        step_range =len(time_clips)-1
+    if use_frame_clips:
+        step_range =len(use_frame_clips)-1
+
+    for i in range(step_range):
+        if time_clips:
+            li = get_index_of_time(time_clips[i][0])
+            ui = get_index_of_time(time_clips[i][1])
+        if use_frame_clips:
+            li = use_frame_clips[i][0]-add_frame_offset
+            ui = use_frame_clips[i][1]-add_frame_offset
+
         #print(li)
         #print(time.values[li])
 
         xi = time[li:ui] #- time.values[li]
         yi = curve_val[li:ui]
         actions.append((xi,yi))
-    for i in range(len(time_clips)-1):
-        li = get_index_of_time(time_clips[i][1])
-        ui = get_index_of_time(time_clips[i+1][0])
+    for i in range(step_range):
+        if time_clips:
+            li = get_index_of_time(time_clips[i][1])
+            ui = get_index_of_time(time_clips[i+1][0])
+        if use_frame_clips:
+            li = use_frame_clips[i][1]-add_frame_offset
+            ui = use_frame_clips[i+1][0]-add_frame_offset
+
         xi = time[li:ui]
         yi = curve_val[li:ui]
         non_actions.append((xi,yi))
     ## add beginning and end to non_actions:
-    non_actions.append((time[0:get_index_of_time(time_clips[0][0])],curve_val[0:get_index_of_time(time_clips[0][0])]))
-    non_actions.append((time[get_index_of_time(time_clips[-1][0]):-1],curve_val[get_index_of_time(time_clips[-1][0]):-1]))
+    if time_clips:
+        a = get_index_of_time(time_clips[0][0])
+        b = get_index_of_time(time_clips[-1][0])
+    if use_frame_clips:
+        a = use_frame_clips[0][0]-add_frame_offset
+        b = use_frame_clips[-1][0]-add_frame_offset
+
+    non_actions.append((time[0:a],curve_val[0:a]))
+    non_actions.append((time[b:-1],curve_val[b:-1]))
     ## test if i did it correctly
     if PLOT_IT:
         fig, ax = plt.subplots()
@@ -666,16 +703,20 @@ def clip_curve(time, curve_val, time_clips = [(0.1,1.13),(1.13,2.2),(2.2,3.26),(
             plt.plot(xi,yi)
         for xi_yi in non_actions:
             plt.plot(xi_yi[0],xi_yi[1],'lightgray')
+        ax_frames = ax.twiny()
+        ax_frames.set_xlim([add_frame_offset,add_frame_offset+len(time)])
+        ax_frames.set_xlabel("Frames")
         ax.xaxis.set_major_locator(MultipleLocator(1))
         ax.xaxis.set_minor_locator(AutoMinorLocator(5))
         ax.grid(which='major', color='#CCCCCC', linestyle='--')
         ax.grid(which='minor', color='#CCCCCC', linestyle=':')
+        ax.set_xlabel("Wall Time [s]")
         plt.show()
     return actions
 #steps = clip_curve(x,y)
 
-def clip_curve_test(time, curve_val, time_clips = [(0.1,1.13),(1.13,2.2),(2.2,3.26),(3.26,4.39),(4.39,5.55)]):
-    clip_curve(time, curve_val, time_clips, PLOT_IT=True) 
+def clip_curve_test(time, curve_val, time_clips = [(0.1,1.13),(1.13,2.2),(2.2,3.26),(3.26,4.39),(4.39,5.55)], add_frame_offset=0, use_frame_clips=[]):
+    return clip_curve(time, curve_val, time_clips, PLOT_IT=True, add_frame_offset=add_frame_offset, use_frame_clips=use_frame_clips) 
 
     
 def reshape_curves(curves, PLOT_IT=False, lower_lim = None, upper_lim = None): ##they have the same x, so now it will return x, Y
