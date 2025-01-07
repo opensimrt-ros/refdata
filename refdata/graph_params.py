@@ -146,21 +146,25 @@ def get_so_graph_params():
 def get_so_short_graph_params():
     so_full = get_so_graph_params()
     so_short = {}
-    short_list = {
+    leg_list = {
             'med_gas':[0,0],
             'lat_gas':[0,1],
             'soleus':[1,1],
+            'tib_ant':[1,0],
             'tib_post':[11,1],
             'flex_dig':[11,2],
             'flex_hal':[12,0],
-            'tib_ant':[1,0],
             'per_brev':[12,2],
             'per_long':[13,0],
             'per_tert':[13,1],
             'ext_dig':[13,2],
             'ext_hal':[14,0],
-
-
+            }
+    short_list = {
+            'med_gas':[0,0],
+            'lat_gas':[0,1],
+            'soleus':[1,1],
+            'tib_ant':[1,0],
             }
     for muscle, pos in short_list.items():
         this_val = so_full[muscle]

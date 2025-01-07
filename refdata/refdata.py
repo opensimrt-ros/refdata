@@ -609,6 +609,7 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
         
         for name, list_of_curves in all_curves_for_this_person.items():
 
+            logger.debug(f"1st loop: {name}")
             curves_combined = []
             ref_name = list_of_curves[1]
             side = list_of_curves[2]
@@ -630,9 +631,12 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                 ## I need to place it in the correct place
                 this_vec,ref_name = new_curves_dict[base_name]
             this_vec[side_index] = curves_combined 
-            new_curves_dict.update({base_name:(this_vec,ref_name)})
+            new_curves_dict.update({name:(this_vec,ref_name)})
+        
+        logger.debug(f"end of 1st loop i created the: {new_curves_dict}")
         
         for name,(this_vec,ref_name) in new_curves_dict.items():
+            logger.debug(f"2nd loop: {name}")
             for side, curves_combined in enumerate(this_vec):  
                 if curves_combined:
                     x, new_curves_combined = reshape_curves(curves_combined)
@@ -661,24 +665,27 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                     new_curves_dict_processed.update({name:(x,new_curves_combined,side,ref_name)})
                     
         for name, curve_dict_curves in new_curves_dict_processed.items():
+            logger.debug(f"3rd loop: {name}")
             
             X = curve_dict_curves[0]
             Y = curve_dict_curves[1]
             side = curve_dict_curves[2]
-            #logger.info(f"going over side {side}")
+            logger.debug(f"going over side {side}")
             ref_name = curve_dict_curves[3]
+            logger.debug(f"the ref_name for this set of curves is {ref_name}")
 
             ax = axs[ ref_name["position"][0],ref_name["position"][1]]
             ax.set_axis_on()
             if plot_ref_curves:
                 if not ref:
-                    print("I was asked to display references, but no reference defined!")
+                    logger.warning("I was asked to display references, but no reference defined!")
                 else:
                     ref.plot_reference_name(ref_name["name"], scale=[1/99,ref_name["scale"][0]], 
                         num_cycles=1, avg_line=False, ax=ax)
             try:
                    ##Let's create a refdata instance for this guy, in case we want to use it in the future:
                 if side == 2 or side == -1:
+                    logger.debug("creating reference curve of combined left and right sides")
                     thisAsRef = RefDataPrimitive()
                     thisAsRef.x    = 100*X #this is how it was defined before...
                     thisAsRef.scale = ref_name["scale"]
@@ -706,6 +713,8 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
             fig.legend(nh, nl,loc='center left', bbox_to_anchor=(1, 0.5))#, loc='lower right')
         #plt.savefig('figure_{}.pdf'.format(plot_save_name_suffix), bbox_inches='tight')
         #plt.show()
+    else:
+        logger.debug("all_curves_for_any_person not a dict")
     if isinstance(all_curves_for_any_person, list):
         for all_curves_for_this_person in all_curves_for_any_person:
             plot_all_joint_or_muscles_for_person(all_curves_for_this_person, plot_ref_curves=False)
@@ -714,6 +723,8 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
             fig.legend(nh, nl,loc='center left', bbox_to_anchor=(1, 0.5))#, loc='lower right')
         #plt.savefig('figure_multiple_people_{}.pdf'.format(plot_save_name_suffix), bbox_inches='tight')
         #plt.show()
+    else:
+        logger.debug("all_curves_for_any_person not a list")
 
     #change the size of the figure to show always exactly the same way 
 
@@ -994,7 +1005,7 @@ def plotAX(some_Axs, ax, fig, plot_std=True, plot_ref_curves=False, legend=False
     for axi in ax.flatten():
         axi.set_axis_off()
     for an_Ax in some_Axs:
-        _,_,nh,nl = plot_std_plots(an_Ax.curves_dic, axs=ax, fig=fig, ref= an_Ax.reference, legend= False, plot_std=plot_std, plot_ref_curves=plot_ref_curves)
+        _,_,nh,nl,_ = plot_std_plots(an_Ax.curves_dic, axs=ax, fig=fig, ref= an_Ax.reference, legend= False, plot_std=plot_std, plot_ref_curves=plot_ref_curves)
         allnh.extend(nh)
         allnl.extend(nl)
     allnh, allnl = remove_repeated(allnh, allnl) 
