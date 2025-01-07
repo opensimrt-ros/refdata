@@ -31,7 +31,7 @@ def get_ik_graph_params():
                 'scale':(1,180/3.1415921)}, 
             'hip_flexion':{'name':r'Hip_Flx_Ext',
                 'plot_it':True,
-                'axes_limits':[-20,80],
+                'axes_limits':[-40,50],
                 'title':"Hip Flex/Ext",
                 'yaxis_name':r"%s$\leftarrow$ Ext Flex $\rightarrow$"%variable_unit,
                 'position':[1,0],
@@ -144,20 +144,30 @@ def get_so_graph_params():
             }
 
 def get_so_short_graph_params():
-    return {
-            'med_gas':	{'name':r'Muscle_Ref_NameXXX','title':"Medial Gastrocnemius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,0],'offset':0,'scale':(1,1)},
-            'lat_gas':	{'name':r'Muscle_Ref_NameXXX','title':"Lateral Gastrocnemius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,1],'offset':0,'scale':(1,1)},
-            'soleus':	{'name':r'Muscle_Ref_NameXXX','title':"Soleus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,1],'offset':0,'scale':(1,1)},
-            'tib_post':	{'name':r'Muscle_Ref_NameXXX','title':"Tibialis Post.",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,1],'offset':0,'scale':(1,1)},
-            'flex_dig':	{'name':r'Muscle_Ref_NameXXX','title':"Flex. dig.",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,2],'offset':0,'scale':(1,1)},
-            'flex_hal':	{'name':r'Muscle_Ref_NameXXX','title':"Flex. Hal.",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,0],'offset':0,'scale':(1,1)},
-            'tib_ant':	{'name':r'Muscle_Ref_NameXXX','title':"Tibialis Ant.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,0],'offset':0,'scale':(1,1)},
-            'per_brev':	{'name':r'Muscle_Ref_NameXXX','title':"per Brev",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,2],'offset':0,'scale':(1,1)},
-            'per_long':	{'name':r'Muscle_Ref_NameXXX','title':"per Long",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,0],'offset':0,'scale':(1,1)},
-            'per_tert':	{'name':r'Muscle_Ref_NameXXX','title':"per tert",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,1],'offset':0,'scale':(1,1)},
-            'ext_dig':	{'name':r'Muscle_Ref_NameXXX','title':"Ext. Digi.",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,2],'offset':0,'scale':(1,1)},
-            'ext_hal':	{'name':r'Muscle_Ref_NameXXX','title':"Ext. Halux",'plot_it':False,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,0],'offset':0,'scale':(1,1)},
+    so_full = get_so_graph_params()
+    so_short = {}
+    short_list = {
+            'med_gas':[0,0],
+            'lat_gas':[0,1],
+            'soleus':[1,1],
+            'tib_post':[11,1],
+            'flex_dig':[11,2],
+            'flex_hal':[12,0],
+            'tib_ant':[1,0],
+            'per_brev':[12,2],
+            'per_long':[13,0],
+            'per_tert':[13,1],
+            'ext_dig':[13,2],
+            'ext_hal':[14,0],
+
+
             }
+    for muscle, pos in short_list.items():
+        this_val = so_full[muscle]
+        this_val['position'] = pos
+        so_short.update({muscle:this_val})
+    return so_short
+
 def get_so_even_smaller():
     return {
  'med_gas': {'name': 'Muscle_Ref_NameXXX',
