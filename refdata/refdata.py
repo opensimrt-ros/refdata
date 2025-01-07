@@ -309,9 +309,19 @@ class SoData(RefData):
     def plot_reference_name(self,reference_name,scale=[1/99,1], num_cycles=1, avg_line=False, ax=None):
         pass
 
+def detect_pelvis_rotation(clipped_curve,pelvis_rotation):
+    for i,(clip, pelv) in enumerate(zip (clipped_curve, pelvis_rotation)): 
+
+        if pelv[1].mean() < 0:
+        
+            #but it doesnt correct the problem with the tilt!
+            #pass
+            clipped_curve[i] = (clipped_curve[i][0], -clipped_curve[i][1])
+    return clipped_curve
+
 
 def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref=GaitIKRefData(),
-        conv_names=graph_params.get_ik_graph_params(), include_actions=[], action=None):
+        conv_names=graph_params.get_ik_graph_params(), include_actions=[], action=None, curve_suffix=""):
     all_curves_for_this_person = {}
 
     for l_r, clips in enumerate(xy_clippings_both):
@@ -338,15 +348,15 @@ def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref
 
                 for joint_or_muscle_name, ref_name in conv_names.items():
 
-                    if joint_or_muscle_name in data.columns:
+                    if joint_or_muscle_name+curve_suffix in data.columns:
                         joint_or_muscle_name_suffix = ["",""]
-                    elif joint_or_muscle_name+"_l" in data.columns and joint_or_muscle_name+"_r" in data.columns:
+                    elif joint_or_muscle_name+"_l"+curve_suffix in data.columns and joint_or_muscle_name+"_r"+curve_suffix in data.columns:
                         joint_or_muscle_name_suffix = ["_l","_r"]
                     else:
                         continue ## I think...
                     if ref_name["plot_it"]:
                         #print(joint_or_muscle_name_suffix)
-                        joint_or_muscle_complete_name = joint_or_muscle_name+joint_or_muscle_name_suffix[l_r]
+                        joint_or_muscle_complete_name = joint_or_muscle_name+joint_or_muscle_name_suffix[l_r]+curve_suffix
                         if not joint_or_muscle_complete_name in all_curves_for_this_person.keys():
                             all_curves_for_this_person.update({joint_or_muscle_complete_name:([],"","")})
 
@@ -358,9 +368,26 @@ def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref
                         #else:
                             #print(xy_clippings_both[l_r])
                         #    which_clippings = xy_clippings_both[l_r][file]
-                        xi, curves = reshape_curves(normalize_steps(clip_curve(data["time"],
-                            data[joint_or_muscle_complete_name]*ref_name["scale"][1]+ref_name["offset"],
-                            time_clips = which_clippings )))
+
+                        clipped_curves = clip_curve(
+                                data["time"],
+                                data[joint_or_muscle_complete_name]*ref_name["scale"][1]+ref_name["offset"],
+                                time_clips = which_clippings )
+
+                        corrected_clipped_curves = clipped_curves
+                        if False and side == -1: ## this doesnt work for ID because we no longer have the IK information for the angle either, so I can't use it anyway
+                            print(joint_or_muscle_complete_name)
+                            ##TODO: this will fail in other models that are not the 1992/2392/2354 etc
+                            pelvis_rot_ref = conv_names["pelvis_rotation"]
+                            clipped_pelvis_rotation = clip_curve(
+                                data["time"],
+                                data["pelvis_rotation"]*pelvis_rot_ref["scale"][1]+pelvis_rot_ref["offset"],
+                                time_clips = which_clippings )
+
+                            corrected_clipped_curves = detect_pelvis_rotation(clipped_curves, clipped_pelvis_rotation )
+
+
+                        xi,  curves = reshape_curves(normalize_steps(corrected_clipped_curves))
 
                         list_of_curves = all_curves_for_this_person[joint_or_muscle_complete_name][0]
                         list_of_curves.append((xi,curves))
@@ -424,7 +451,7 @@ def actual_plot(X,Y,ax,side, plot_std, steps_label= "{}steps 1-{}",change_x_tick
         color_cycle = plt.cm.Greens(np.linspace(cycle_begin,cycle_end,colorspace_range))
     else:
         raise Exception("side does not have a color defined!")
-
+    
     if plot_std:
         #print(mean_name)
         #print("Mean{}".format(mean_name))
@@ -446,7 +473,6 @@ def actual_plot(X,Y,ax,side, plot_std, steps_label= "{}steps 1-{}",change_x_tick
                 ax.plot(X,y,alpha=my_alpha)
     if change_x_ticks:
         ax.set_xticks([0,.20,.40,.60,.80,1.00],labels=[0,20,40,60,80,100])
-        
 
 def create_axs_dimensions(nrows, ncols, margin= 2, header = 2, subheigth = 8, subwidth= 8): ## now it is in cm
 
@@ -474,8 +500,9 @@ def create_axs_dimensions(nrows, ncols, margin= 2, header = 2, subheigth = 8, su
 
     return fig, axarr
 
-def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=True, ref=GaitIKRefData(), subplot_grid=(ROW_OF_FLOTS+1,3), steps_label="{}steps 1-{}", legend=True, axs=None, fig=None, use_color_cycle=True):
+def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=True, ref=GaitIKRefData(), subplot_grid=(ROW_OF_FLOTS+1,3), steps_label="{}steps 1-{}", legend=True, axs=None, fig=None, use_color_cycle=True, subject_identifier="Some_Subject_Or_Group_of_Subjects_Please_Change",curve_suffix=""):
     new_curves_dict = {}
+    new_curves_dict_processed = {}
     if ref:
         action_type = ref.action_type
     else:
@@ -495,8 +522,24 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
     else:
         plot_save_name_suffix = "each_step"
 
-
+    createRefDic = {}
+    def strip_name(some_name_with_suffix):
+        if curve_suffix:
+            some_name = some_name_with_suffix.split(curve_suffix)[0]
+        else:
+            some_name = some_name_with_suffix
+        get_index = None
+        if some_name[-2:] == "_l":
+            get_index = 0
+        elif some_name[-2:] == "_r":
+            get_index = 1
+        else:
+            get_index = 2
+            
+        return get_index , some_name[:-2]
+    
     def plot_all_joint_or_muscles_for_person(all_curves_for_this_person, plot_ref_curves=True):
+        
         for name, list_of_curves in all_curves_for_this_person.items():
 
             curves_combined = []
@@ -507,11 +550,55 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                 x = curves[0]
                 for curve in curves[1]:
                     curves_combined.append((x, curve))
+            
+            print(ref_name)
+            #side_index, base_name = strip_name(name)
+            #if not side == side_index:
+            side_index = side
+            if side == -1:
+                side_index = 2
+            base_name = ref_name['name']
+                #logger.error("side is different from named side")
+            this_vec = [None, None, None]
+            
+            if base_name in new_curves_dict.keys():
+                ## I need to place it in the correct place
+                this_vec,ref_name = new_curves_dict[base_name]
+            this_vec[side_index] = curves_combined 
+            new_curves_dict.update({base_name:(this_vec,ref_name)})
+        
+        for name,(this_vec,ref_name) in new_curves_dict.items():
+            for side, curves_combined in enumerate(this_vec):  
+                if curves_combined:
+                    x, new_curves_combined = reshape_curves(curves_combined)
+                    suffix = ""
+                    if side == 0:
+                        suffix= "_l"
+                    if side == 1:
+                        suffix= "_r"
+                    if side == 2:
+                        side = -1
 
-            x, new_curves_combined = reshape_curves(curves_combined) 
-            new_curves_dict.update({name:(x,new_curves_combined)})
-            X = new_curves_dict[name][0]
-            Y = new_curves_dict[name][1]
+                    new_curves_dict_processed.update({f"{name}{suffix}":(x,new_curves_combined,side,ref_name)})
+            
+            for side, curves_combined in enumerate(this_vec):    
+                if side == 2 and not curves_combined:
+                    curves_combined = None 
+                    if this_vec[0] and this_vec[1]:
+                        curves_combined = this_vec[0] + this_vec[1]
+                    if not this_vec[0]:
+                        curves_combined = this_vec[1]
+                    if not this_vec[1]:
+                        curves_combined = this_vec[0]
+                    x, new_curves_combined = reshape_curves(curves_combined)
+                    new_curves_dict_processed.update({name:(x,new_curves_combined,side,ref_name)})
+                    
+        for name, curve_dict_curves in new_curves_dict_processed.items():
+            
+            X = curve_dict_curves[0]
+            Y = curve_dict_curves[1]
+            side = curve_dict_curves[2]
+            ref_name = curve_dict_curves[3]
 
             ax = axs[ ref_name["position"][0],ref_name["position"][1]]
             ax.set_axis_on()
@@ -522,9 +609,18 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                     ref.plot_reference_name(ref_name["name"], scale=[1/99,ref_name["scale"][0]], 
                         num_cycles=1, avg_line=False, ax=ax)
             try:
-                actual_plot(X,Y,ax,side, plot_std, steps_label=steps_label,use_color_cycle=use_color_cycle)
-            except:
-                logger.error(f"could not plot {name}, {ref_name['name']}")
+                   ##Let's create a refdata instance for this guy, in case we want to use it in the future:
+                if side == 2 or side == -1:
+                    thisAsRef = RefDataPrimitive()
+                    thisAsRef.x    = 100*X #this is how it was defined before...
+                    thisAsRef.mean = ref_name["scale"][0]*Y.mean(axis=0)
+                    thisAsRef.sd   = Y.std(axis=0) 
+                    thisAsRef.name = subject_identifier
+                    createRefDic.update({ref_name["name"]:[thisAsRef]})
+                if not side == 2:
+                    actual_plot(X,Y,ax,side, plot_std, steps_label=steps_label,use_color_cycle=use_color_cycle)
+            except BaseException as e:
+                logger.error(f"could not plot {name}, {ref_name['name']} {e.what}")
             ax.set_title(ref_name["title"])
             ax.set(xlabel=f"\MakeUppercase {action_type} cycle [\%]", ylabel=ref_name["yaxis_name"])
             ax.set_ylim(ref_name["axes_limits"])
@@ -555,7 +651,7 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
 
 
 
-    return axs, fig, nh, nl
+    return axs, fig, nh, nl, createRefDic
 
 
 
@@ -603,7 +699,7 @@ class TrialData:
             return self.data.loc[:,cols].values
         
         
-def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_prefix="knee_angle", conv_names=graph_params.get_ik_graph_params(),left_or_right=0):
+def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_prefix="knee_angle", conv_names=graph_params.get_ik_graph_params(),left_or_right=0, curve_suffix=""):
     xy_joint_or_muscles = ({},{})
     for i_file, file in enumerate(some_action_trials):
         if i_file in skip_trials:
@@ -623,17 +719,18 @@ def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_p
 
             if ref_name["plot_it"]:
                 for l_r, joint_or_muscle_suffix in enumerate(joint_or_muscle_name_suffix):
-                    joint_or_muscle_complete_name = joint_or_muscle_name+joint_or_muscle_suffix
+                    joint_or_muscle_complete_name = joint_or_muscle_name+joint_or_muscle_suffix + curve_suffix
 
-                    if joint_or_muscle_complete_name=="%s_r"%curve_prefix:
+                    #print(joint_or_muscle_complete_name)
+                    if joint_or_muscle_complete_name==f"{curve_prefix}_r{curve_suffix}":
                         y = data[joint_or_muscle_complete_name]*ref_name["scale"][1]
                         x = data["time"]
                         xy_joint_or_muscles[1].update({file:(x,y,[])})
-                    elif joint_or_muscle_complete_name=="%s_l"%curve_prefix:
+                    elif joint_or_muscle_complete_name==f"{curve_prefix}_l{curve_suffix}":
                         y = data[joint_or_muscle_complete_name]*ref_name["scale"][1]
                         x = data["time"]
                         xy_joint_or_muscles[0].update({file:(x,y,[])})
-                    elif joint_or_muscle_complete_name==curve_prefix:
+                    elif joint_or_muscle_complete_name==curve_prefix+curve_suffix:
                         print("FORCE PLATE?")
                         y = data[joint_or_muscle_complete_name]*ref_name["scale"][1]
                         x = data["time"]

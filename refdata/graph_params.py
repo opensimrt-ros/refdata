@@ -237,7 +237,7 @@ def get_id_all_graph_params(weight):
                 'yaxis_name': '%s$\\leftarrow$ Abd add $\\rightarrow$'%variable_unit,
                 'position': [1, 1],
                 'offset':0,
-                'scale': (1,1/weight)},
+                'scale': (-1,1/weight)},
             'hip_rotation': {'name': 'Hip_Int_Ext',
                 'plot_it': True,
                 'axes_limits': [-5, 5],
@@ -269,7 +269,7 @@ def get_id_all_graph_params(weight):
                 'yaxis_name': '%s$\\leftarrow$ Ext Int $\\rightarrow$'%variable_unit,
                 'position': [2, 2],
                 'offset':0,
-                'scale': (1,1/weight)},
+                'scale': (1,-1/weight)},
             'mtp_angle': {'name': 'Angle_',
                 'plot_it': True,
                 'axes_limits': [-0.005, 0.005],
@@ -281,7 +281,9 @@ def get_id_all_graph_params(weight):
             }
 
 def get_id_sagittal_graph_params(weight):
-    conv_names = get_id_all_graph_params(weight)
+    return sagittal_only(get_id_all_graph_params(weight))
+
+def sagittal_only(conv_names):
     sag_names = {}
     sagittal_joints_list = ["hip_flexion","knee_angle","ankle_angle"]
     position_list = [[0,0],[0,1],[0,2]] ##idk..
@@ -292,6 +294,15 @@ def get_id_sagittal_graph_params(weight):
     
     return sag_names
 
+def get_id_standard_graph_params(weight):
+    conv_names = get_id_all_graph_params(weight)
+    for joint_name in conv_names.keys():
+        m = conv_names[joint_name]["scale"][0]  
+        n = conv_names[joint_name]["scale"][1]  
+        if m*n == -1:
+            conv_names[joint_name]["scale"] = (-1,1/weight)
+            conv_names[joint_name]["axes_limits"]=[-conv_names[joint_name]["axes_limits"][1],-conv_names[joint_name]["axes_limits"][0]]
+    return conv_names
 
 def get_id_graph_params(weight): ## in my mind this should be the default though
     logging.warn("Deprecated: dont use, use get_id_sagittal_graph_params instead.")
