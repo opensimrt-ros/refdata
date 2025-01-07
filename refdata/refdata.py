@@ -90,38 +90,39 @@ class RefDataPrimitive:
         self._mean = None
         self._sd = None
         self._Y = None
+        self.scale = (1,1)
     def __repr__(self):
         return f"RefDataPrimitive(): {self.name} "
     def __str__(self):
         return f"RefDataPrimitive():\n name: {self.name}\n x: {self.x}\n mean: {self.mean}\n sd: {self.sd}"
     @property
     def sd(self):
-        if not self._Y:
+        if self._Y is None:
             return self._sd
         else:
             ## calculate the sd from Y
-            logger.error("not implemented yet!")
-            return self._Y.std()
+            #logger.error("not implemented yet!")
+            return self._Y.std(axis=0)
 
     @sd.setter
     def sd(self, value):
-        if not self._Y:
+        if self._Y is None:
             self._sd = value
         else:
             logger.error("cannot set standard deviation on a reference data type that has raw Y data already defined!")
 
     @property
     def mean(self):
-        if not self._Y:
+        if self._Y is None:
             return self._mean
         else:
             ## calculate mean from Y
-            logger.error("not implemented yet!")
-            return self._Y.mean()
+            #logger.error("not implemented yet!")
+            return self.scale[0]*self._Y.mean(axis=0)
 
     @mean.setter
     def mean(self, value):
-        if not self._Y:
+        if self._Y is None:
             self._mean = value
         else:
             logger.error("cannot set mean value on a reference data type that has raw Y data already defined!")
@@ -133,6 +134,21 @@ class RefDataPrimitive:
     @Y.setter
     def Y(self,value):
         self._Y = value
+
+    def appendYcurves(self, x, y):
+        if len(x) == 0:
+            raise(ValueError("x cannot be empty, actually, it maybe could be and i would infer it from the length, but alas"))
+        nmaxX = np.max([len(self.x), len(x)])
+        newx = np.linspace(0,100,nmaxX)
+        newselfY = interpolate.pchip_interpolate(self.x , self._Y   , newx, axis=1)
+        newnewY  = interpolate.pchip_interpolate(x      , y         , newx, axis=1)
+        logger.warning("now figure out if the concatenation is correct!")
+        self.x = newx
+        self._Y = np.concatenate((newselfY, newnewY), axis=0)
+        assert(len(self.x) == self._Y.shape[1])
+    def appendPrimitive(self, otherPrim):
+        self.appendYcurves(otherPrim.x, otherPrim.Y)
+        self.name += otherPrim.name
 
 def repeat_x(x_, n_times):
     x = x_
@@ -249,6 +265,20 @@ class RefData:
             logging.warn("I dont have the reference %s"%reference_name)
         #plt.legend()
         #plt.show()            
+    def append_curves(self,otherRefData):
+        try:
+            assert(set(self.reference_curve_dict.keys()) == set(self.reference_curve_dict.keys()))
+        except:
+            logger.error("You have different types of reference curves. If you want to add only the ones that are the same, you have to change this function to do like an intersecion and loop over that to add it. Out of scope right now")
+        for reference_name in self.reference_curve_dict:
+
+            if len(otherRefData.reference_curve_dict[reference_name])>1 or len(self.reference_curve_dict[reference_name])>1:
+                logger.warning("im always rushing, so I won't support multiple different references in the same obnject right now. i cant even imagine what you are trying to do anyway. do it manually")
+                raise(Exception("complicated reference dict situation here, wtf."))
+            otherRefPrimitive = otherRefData.reference_curve_dict[reference_name][0]
+            #self.reference_curve_dict[reference_name][0].appendYcurves(otherRefPrimitive.x, otherRefPrimitive.Y)
+            self.reference_curve_dict[reference_name][0].appendPrimitive(otherRefPrimitive)
+        logger.info("Extended references OK.")
 
 def latex_friendly_column_names(name):
     name = name.replace(" ", "_")
@@ -388,11 +418,13 @@ def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref
 
                 for joint_or_muscle_name, ref_name in conv_names.items():
 
+                    logger.debug(f"trying to find {joint_or_muscle_name}")
                     if joint_or_muscle_name+curve_suffix in data.columns:
                         joint_or_muscle_name_suffix = ["",""]
                     elif joint_or_muscle_name+"_l"+curve_suffix in data.columns and joint_or_muscle_name+"_r"+curve_suffix in data.columns:
                         joint_or_muscle_name_suffix = ["_l","_r"]
                     else:
+                        logger.error(f"Could not find {joint_or_muscle_name} in source data!")
                         continue ## I think...
                     if ref_name["plot_it"]:
                         #print(joint_or_muscle_name_suffix)
@@ -431,16 +463,21 @@ def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref
 
                         list_of_curves = all_curves_for_this_person[joint_or_muscle_complete_name][0]
                         list_of_curves.append((xi,curves))
+                        logger.debug(f"list of curves for {joint_or_muscle_name}: {list_of_curves}")
                         ##define side for plot:
                         #if joint_or_muscle_suffix:
                         #    side = l_r
                         #else: ## pelvis or lumbar joints
                         #    side = -1
                         all_curves_for_this_person.update({joint_or_muscle_complete_name:(list_of_curves, ref_name,side)})
+                        logger.debug(f"I believe I have added {joint_or_muscle_name}")
+
             except:
                 traceback.print_exc()
                 print("failed in %s"%i_file)
                 pass
+    if all_curves_for_this_person == {}:
+        logger.error("No curves generated! Check source data")
     return all_curves_for_this_person
 
 def generate_gait_plots(gait_trials,xy_clippings_both, **kwargs):
@@ -541,7 +578,11 @@ def create_axs_dimensions(nrows, ncols, margin= 2, header = 2, subheigth = 8, su
     return fig, axarr
 
 def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=True, ref=GaitIKRefData(), subplot_grid=(ROW_OF_FLOTS+1,3), steps_label="{}steps 1-{}", legend=True, axs=None, fig=None, use_color_cycle=True, subject_identifier="Some_Subject_Or_Group_of_Subjects_Please_Change",curve_suffix=""):
+    if ref is None:
+        plot_ref_curves = False
+        logger.warning("No reference curves defined, can't plot them")
     new_curves_dict = {}
+
     new_curves_dict_processed = {}
     if ref:
         action_type = ref.action_type
@@ -640,9 +681,11 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                 if side == 2 or side == -1:
                     thisAsRef = RefDataPrimitive()
                     thisAsRef.x    = 100*X #this is how it was defined before...
-                    thisAsRef.mean = ref_name["scale"][0]*Y.mean(axis=0)
-                    thisAsRef.sd   = Y.std(axis=0) 
+                    thisAsRef.scale = ref_name["scale"]
+                    #thisAsRef.mean = ref_name["scale"][0]*Y.mean(axis=0)
+                    #thisAsRef.sd   = Y.std(axis=0) 
                     thisAsRef.name = subject_identifier
+                    thisAsRef.Y = Y
                     createRefDic.update({ref_name["name"]:[thisAsRef]})
                 if not side == 2:
                     actual_plot(X,Y,ax,side, plot_std, steps_label=steps_label,use_color_cycle=use_color_cycle)
@@ -685,7 +728,7 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
 
 class TrialData:
     def __init__(self, file, remove_time_offset=True):
-        print("file: %s"%file)
+        logger.info("Reading Trial file: %s"%file)
         ### find the size of the header:
         header_line_count = 0
         in_degrees=False
