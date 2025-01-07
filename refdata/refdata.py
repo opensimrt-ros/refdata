@@ -87,12 +87,52 @@ class RefDataPrimitive:
     def __init__(self):
         self.name = ""
         self.x = None
-        self.mean = None
-        self.sd = None
+        self._mean = None
+        self._sd = None
+        self._Y = None
     def __repr__(self):
         return f"RefDataPrimitive(): {self.name} "
     def __str__(self):
         return f"RefDataPrimitive():\n name: {self.name}\n x: {self.x}\n mean: {self.mean}\n sd: {self.sd}"
+    @property
+    def sd(self):
+        if not self._Y:
+            return self._sd
+        else:
+            ## calculate the sd from Y
+            logger.error("not implemented yet!")
+            return self._Y.std()
+
+    @sd.setter
+    def sd(self, value):
+        if not self._Y:
+            self._sd = value
+        else:
+            logger.error("cannot set standard deviation on a reference data type that has raw Y data already defined!")
+
+    @property
+    def mean(self):
+        if not self._Y:
+            return self._mean
+        else:
+            ## calculate mean from Y
+            logger.error("not implemented yet!")
+            return self._Y.mean()
+
+    @mean.setter
+    def mean(self, value):
+        if not self._Y:
+            self._mean = value
+        else:
+            logger.error("cannot set mean value on a reference data type that has raw Y data already defined!")
+
+    @property
+    def Y(self):
+        return self._Y
+
+    @Y.setter
+    def Y(self,value):
+        self._Y = value
 
 def repeat_x(x_, n_times):
     x = x_
@@ -523,20 +563,6 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
         plot_save_name_suffix = "each_step"
 
     createRefDic = {}
-    def strip_name(some_name_with_suffix):
-        if curve_suffix:
-            some_name = some_name_with_suffix.split(curve_suffix)[0]
-        else:
-            some_name = some_name_with_suffix
-        get_index = None
-        if some_name[-2:] == "_l":
-            get_index = 0
-        elif some_name[-2:] == "_r":
-            get_index = 1
-        else:
-            get_index = 2
-            
-        return get_index , some_name[:-2]
     
     def plot_all_joint_or_muscles_for_person(all_curves_for_this_person, plot_ref_curves=True):
         
@@ -551,9 +577,7 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                 for curve in curves[1]:
                     curves_combined.append((x, curve))
             
-            print(ref_name)
-            #side_index, base_name = strip_name(name)
-            #if not side == side_index:
+            #print(ref_name)
             side_index = side
             if side == -1:
                 side_index = 2
@@ -583,9 +607,11 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
             
             for side, curves_combined in enumerate(this_vec):    
                 if side == 2 and not curves_combined:
+                    #logger.info("trying to combine sides")
                     curves_combined = None 
                     if this_vec[0] and this_vec[1]:
                         curves_combined = this_vec[0] + this_vec[1]
+                        #logger.info("sides combined!")
                     if not this_vec[0]:
                         curves_combined = this_vec[1]
                     if not this_vec[1]:
@@ -598,6 +624,7 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
             X = curve_dict_curves[0]
             Y = curve_dict_curves[1]
             side = curve_dict_curves[2]
+            #logger.info(f"going over side {side}")
             ref_name = curve_dict_curves[3]
 
             ax = axs[ ref_name["position"][0],ref_name["position"][1]]
