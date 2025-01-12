@@ -604,7 +604,13 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
         plot_save_name_suffix = "each_step"
 
     createRefDic = {}
-    
+
+    def strip_name(some_name):
+        suffix = some_name[-2:] 
+        if suffix == "_l" or suffix == "_r":
+            return some_name[:-2]
+        return some_name
+
     def plot_all_joint_or_muscles_for_person(all_curves_for_this_person, plot_ref_curves=True):
         
         for name, list_of_curves in all_curves_for_this_person.items():
@@ -627,11 +633,21 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
                 #logger.error("side is different from named side")
             this_vec = [None, None, None]
             
-            if base_name in new_curves_dict.keys():
+            #### arg this is more complicated than i thought
+            stripped_name = strip_name(name)
+            if stripped_name in new_curves_dict.keys():
                 ## I need to place it in the correct place
-                this_vec,ref_name = new_curves_dict[base_name]
+                logger.info("if this is triggered, then i am updating the side, right?")
+                this_vec,ref_name = new_curves_dict[stripped_name]
+                logger.debug(this_vec[side_index])
+                logger.debug(curves_combined)
+                logger.debug("I need to concatenate those, I think")
+            else:
+                logger.debug(f"This is not triggered now >>{name}<<, {base_name}")
+                logger.debug(name)
+                logger.debug(new_curves_dict.keys())
             this_vec[side_index] = curves_combined 
-            new_curves_dict.update({name:(this_vec,ref_name)})
+            new_curves_dict.update({stripped_name:(this_vec,ref_name)})
         
         logger.debug(f"end of 1st loop i created the: {new_curves_dict}")
         
