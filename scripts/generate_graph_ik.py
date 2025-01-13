@@ -37,7 +37,11 @@ def run(trial_data_yaml,trial_files_yaml,out_dir):
     cc = [(refdata.graph_params.get_ik_graph_params(),(3,3)),
           (refdata.graph_params.get_ik_short_graph_params(),(1,3))]
 
-    asRefData = pickle.load( open( os.path.join(trial_dir,f"ik_ref_data_s{subject_num}.p"), "rb" ) )
+    asRefData = None
+    try:
+        asRefData = pickle.load( open( os.path.join(trial_dir,f"ik_ref_data_s{subject_num}.p"), "rb" ) )
+    except:
+        pass
     ref = {
             'center':refdata.GaitIKRefData(),
             'vicon': asRefData

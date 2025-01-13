@@ -18,14 +18,27 @@ def prettier(name, l):
     return s
     
 
-def run(trial_data_yaml, trial_files_yaml ,out_dir):
+def run(trial_data_yaml, trial_files_yaml,trial_files_yaml_pruned ,out_dir):
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
+    print(trial_data_yaml,trial_files_yaml)
     refdata.plt.rcParams['figure.figsize'] = [12, 5]
     refdata.ROW_OF_FLOTS = 1
 
     ######################### TRIAL INFO ##########################################
     this_action_name, actions_to_be_shown,subject_num,weight,skip_trials,trial_dir = get_trial(trial_data_yaml)
 
-    ik_files, grfL_files,grfR_files, id_files, so_files, ik_lower_files, lumps = sort_files(directory=trial_dir)                               
+    ik_files, grfL_files,grfR_files, id_files, so_files, ik_lower_files, lumps = sort_files(action_list=actions_to_be_shown,directory=trial_dir)                               
 
     conv_names = refdata.graph_params.get_id_graph_params(weight)
 
@@ -56,9 +69,12 @@ def run(trial_data_yaml, trial_files_yaml ,out_dir):
         yaml.dump(files,f)
         f.write(prettier("left",step_seg_l_list))
         f.write(prettier("right",step_seg_r_list))
-    create_pruned("trial_files.yaml","pruned_files.yaml",skip_trials)
+    create_pruned(trial_files_yaml,trial_files_yaml_pruned,skip_trials)
 
 def prune_files(dic,skip_files):
+    print(dic)
+    if len(skip_files) == 0:
+        return dic
     d = {}
     for k,v in dic.items():
         a = []
@@ -88,7 +104,7 @@ def create_pruned(trial_file,pruned_trial_file, skip_files):
 
 if __name__== "__main__":
     #only file necessary is "trial_data.yaml", everything else will be from the trial itself or generated
-    run("trial_data.yaml","trial_files.yaml","./")
+    run("trial_data.yaml","trial_files.yaml",'pruned_files.yaml',"./")
     print("*"*100)
     refdata.logger.warning("ATTENTION: please update the pruned_files.yaml with the step segmentation that you got from vicon")
     print("*"*100)

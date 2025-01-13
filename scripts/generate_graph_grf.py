@@ -39,8 +39,8 @@ def run(trial_data_yaml,trial_files_yaml,out_dir):
                                                               left_or_right=1)
 
 
-    xy_time_clippings_left = build_clipings(grfL_files,left_times)
-    xy_time_clippings_right = build_clipings(grfR_files,right_times)
+    xy_time_clippings_left = build_clipings(action_trials_left,left_times)
+    xy_time_clippings_right = build_clipings(action_trials_right,right_times)
     logger.info(xy_time_clippings_left)
     logger.info(xy_time_clippings_right)
 

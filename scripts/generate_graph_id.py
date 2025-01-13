@@ -37,7 +37,11 @@ def run(trial_data_yaml,trial_files_yaml,out_dir):
     cc = [(refdata.graph_params.get_id_all_graph_params(weight),(4,3)),
           (refdata.graph_params.get_id_graph_params(weight),(1,3))]
 
-    asRefData = pickle.load( open( os.path.join(trial_dir,f"id_ref_data_s{subject_num}.p"), "rb" ) )
+    asRefData = None
+    try:
+        asRefData = pickle.load( open( os.path.join(trial_dir,f"id_ref_data_s{subject_num}.p"), "rb" ) )
+    except:
+        pass
     ref = {
             'idk':(refdata.IdData(this_action_name),''),
             'center':(refdata.IdGaitData(this_action_name),''),

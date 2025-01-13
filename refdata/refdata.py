@@ -642,7 +642,7 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
             stripped_name = strip_name(name)
             if stripped_name in new_curves_dict.keys():
                 ## I need to place it in the correct place
-                logger.info("if this is triggered, then i am updating the side, right?")
+                #logger.info("if this is triggered, then i am updating the side, right?")
                 this_vec,ref_name = new_curves_dict[stripped_name]
                 logger.debug(this_vec[side_index])
                 logger.debug(curves_combined)
