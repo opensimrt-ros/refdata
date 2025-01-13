@@ -8,6 +8,7 @@ from mpl_toolkits.axes_grid1 import Divider, Size,  make_axes_locatable
 from importlib.metadata import version
 import os
 import traceback
+from . import graph_params
 
 def check_ver(package, ver_requirements):
     ver_requirements_list = ver_requirements.split('.')
@@ -42,7 +43,6 @@ from scipy.signal import argrelextrema
 from scipy.interpolate import PchipInterpolator
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 import os
-from . import graph_params
 
 import logging
 logger = logging.getLogger(__name__)
@@ -391,7 +391,7 @@ def detect_pelvis_rotation(clipped_curve,pelvis_rotation):
 
 
 def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref=GaitIKRefData(),
-        conv_names=graph_params.get_ik_graph_params(), include_actions=[], action=None, curve_suffix=""):
+        conv_names=None, include_actions=[], action=None, curve_suffix=""):
     all_curves_for_this_person = {}
 
     for l_r, clips in enumerate(xy_clippings_both):
@@ -606,6 +606,11 @@ def plot_std_plots(all_curves_for_any_person, plot_std=True, plot_ref_curves=Tru
     createRefDic = {}
 
     def strip_name(some_name):
+        if not len(curve_suffix) ==0:
+            if curve_suffix in some_name:
+                some_name = some_name.split(curve_suffix)[0]
+            else:
+                logger.error(f"you provided a curve suffix '{curve_suffix}', but this was not found in the name definition '{some_name}'. Plots will likely be incorrect")
         suffix = some_name[-2:] 
         if suffix == "_l" or suffix == "_r":
             return some_name[:-2]
@@ -796,7 +801,7 @@ class TrialData:
             return self.data.loc[:,cols].values
         
         
-def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_prefix="knee_angle", conv_names=graph_params.get_ik_graph_params(),left_or_right=0, curve_suffix=""):
+def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_prefix="knee_angle", conv_names=None,left_or_right=0, curve_suffix=""):
     xy_joint_or_muscles = ({},{})
     for i_file, file in enumerate(some_action_trials):
         if i_file in skip_trials:
@@ -1133,7 +1138,7 @@ def construct_step_segmentation_vector(some_steps):
 from copy import copy
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
-def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", weight=None, plot_all=False, time_offset=0, plot_no_offset=True,
+def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", weight=None, plot_all=False, time_offset=0, plot_no_offset=True, nicer_plot=False, figax = None,
 
         figsize=(18,4)):
     
@@ -1151,7 +1156,11 @@ def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", 
     all_handles = []
     all_labels = []
     
-    fig, ax1 = plt.subplots(figsize=figsize)
+    if nicer_plot:
+        fig = figax[0]
+        ax1 = figax[1]
+    else:
+        fig, ax1 = plt.subplots(figsize=figsize)
     ax1.xaxis.set_major_locator(MultipleLocator(1))    
     ax1.xaxis.set_minor_locator(MultipleLocator(.1))    
     #plt.plot(x_ik,ik_2.data.ankle_angle_l/3.141592*180,"--", label="ankle l")
@@ -1188,9 +1197,12 @@ def each_side_plot(grf_, zero_time, grf_name_prefix = "1_ground_", side="Left", 
     all_labels.extend(labels)
 
 
-    plt.title(f"grf {side}")
+    plt.title(f"grf {side}: {grf_}")
     fig.legend(all_handles, all_labels)
-    plt.show()
+    if nicer_plot:
+        pass
+    else:
+        plt.show()
 
     try:
         round_output = np.vectorize(lambda n: (np.round(n,2) if n else 1000))

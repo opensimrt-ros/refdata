@@ -3,6 +3,7 @@
 import re
 from glob import glob
 import logging
+from os import path
 
 class TrialFile():
     def __init__(self, filename):
@@ -12,7 +13,8 @@ class TrialFile():
         self.extension = ""
         self.activity = ""
         self.set_from_name(filename)
-    def set_from_name(self, filename):
+    def set_from_name(self, complete_filename):
+        filename = path.basename(complete_filename)
         r = re.match("([0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2})([a-zA-Z]*)([0-9]+)(.*?)\.(.*)",
                  filename)
         if r:
@@ -38,6 +40,7 @@ def get_all_times(a_glob):
 
 def lumpTrialFiles(a_glob):
     my_times = get_all_times(a_glob)
+    logging.debug(f"my_times {my_times}")
     lumped_times = []
     for i, tims in enumerate (my_times):
         if i == 0:
@@ -58,6 +61,7 @@ def lumpTrialFiles(a_glob):
                 if time in file:
                     this_trial_files.append(file)
         lumped_files.append(this_trial_files)
+    logging.debug(lumped_files)
     return lumped_files
 
 def construct_grf_ik_id_so_from_lumps(lumps):
@@ -95,15 +99,16 @@ def construct_grf_ik_id_so_from_lumps(lumps):
         so_files.append(so_file)
     return ik_files, grfL_files, grfR_files, id_files, so_files, ik_lower_files, lumps
 
-def sort_files(action_list=None):
+def sort_files(action_list=None, directory="./" ):
     if not action_list:
-        logging.warn("no list of actions provided. Will add all files in current folder!")
+        logging.warn(f"no list of actions provided. Will add all files in {directory} folder!")
         action_list = [""]
-    the_glob = glob("*")
+    the_glob = glob(path.join(directory,"*"))
     sifted_glob = []
     for action in action_list:
         for file in the_glob:
             if action in file:
+                logging.debug(f"appending file {file}")
                 sifted_glob.append(file)
     return construct_grf_ik_id_so_from_lumps(lumpTrialFiles(sifted_glob))
 
