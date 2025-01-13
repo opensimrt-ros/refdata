@@ -1,0 +1,12 @@
+######################### TRIAL INFO ##########################################
+
+this_action_name: "walking"
+
+actions_to_be_shown: [ "walking" ]
+#['walk','gait','slow','fast']
+
+subject_num: "EX01RE"
+weight: 53
+skip_trials: [5,6,7]
+
+directory: "../../RTValidation_Extra/EX01RE/SESSION1/"
