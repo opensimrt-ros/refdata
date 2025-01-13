@@ -72,31 +72,19 @@ def construct_grf_ik_id_so_from_lumps(lumps):
     id_files = []
     so_files = []
     for lump in lumps:
-        ik_file = ""
-        lk_lower_file = ""
-        grfL_file = ""
-        grfR_file = ""
-        id_file = ""
-        so_file = ""
         for file in lump:
             if "_ik_lower.sto" in file:
-                ik_lower_file = file
+                ik_lower_files.append(file)
             if "ik.sto" in file:
-                ik_file = file
+                ik_files.append(file)
             if "grfRight.sto" in file:
-                grfR_file = file
+                grfR_files.append(file)
             if "grfLeft.sto" in file:
-                grfL_file = file
+                grfL_files.append(file)
             if "tau.sto" in file:
-                id_file = file
+                id_files.append(file)
             if "so.sto" in file:
-                so_file = file
-        ik_files.append(ik_file)
-        ik_lower_files.append(ik_lower_file)
-        grfL_files.append(grfL_file)
-        grfR_files.append(grfR_file)
-        id_files.append(id_file)
-        so_files.append(so_file)
+                so_files.append(file)
     return ik_files, grfL_files, grfR_files, id_files, so_files, ik_lower_files, lumps
 
 def sort_files(action_list=None, directory="./" ):

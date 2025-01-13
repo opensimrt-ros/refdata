@@ -39,7 +39,7 @@ def run(trial_data_yaml,trial_files_yaml,out_dir):
 
     asRefData = None
     try:
-        asRefData = pickle.load( open( os.path.join(trial_dir,f"ik_ref_data_s{subject_num}.p"), "rb" ) )
+        asRefData = pickle.load( open( os.path.join(trial_dir,f"ik_ref_{this_action_name}_data_s{subject_num}.p"), "rb" ) )
     except:
         pass
     ref = {

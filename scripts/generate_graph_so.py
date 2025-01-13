@@ -38,7 +38,11 @@ def run(trial_data_yaml,trial_files_yaml,out_dir):
           (refdata.graph_params.get_so_short_graph_params(),(2,2)),
           (refdata.graph_params.get_so_even_smaller(),(1,3))]
 
-    #asRefData = pickle.load( open( os.path.join(trial_dir,f"so_ref_data_s{subject_num}.p"), "rb" ) )
+    asRefData = None
+    try:
+        asRefData = pickle.load( open( os.path.join(trial_dir,f"so_ref_{this_action_name}_data_s{subject_num}.p"), "rb" ) )
+    except:
+        pass
     ref = {
             'idk':(refdata.SoData(this_action_name),''),
             #'center':(refdata.IdGaitData(this_action_name),''),
