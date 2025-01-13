@@ -34,8 +34,9 @@ def run(trial_data_yaml,trial_files_yaml,out_dir):
     xy_time_clippings_right = build_clipings(so_files,right_times)
     xy_clippings_both_so = (xy_time_clippings_left,xy_time_clippings_right)
 
-    cc = [(refdata.graph_params.get_so_all_graph_params(weight),(4,3)),
-          (refdata.graph_params.get_so_graph_params(weight),(1,3))]
+    cc = [(refdata.graph_params.get_so_graph_params(),(16,3)),
+          (refdata.graph_params.get_so_short_graph_params(),(2,2)),
+          (refdata.graph_params.get_so_even_smaller(),(1,3))]
 
     #asRefData = pickle.load( open( os.path.join(trial_dir,f"so_ref_data_s{subject_num}.p"), "rb" ) )
     ref = {
