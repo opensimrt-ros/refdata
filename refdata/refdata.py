@@ -391,7 +391,7 @@ def detect_pelvis_rotation(clipped_curve,pelvis_rotation):
 
 
 def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref=GaitIKRefData(),
-        conv_names=None, include_actions=[], action=None, curve_suffix=""):
+        conv_names=None, include_actions=[], action=None, curve_suffix="", use_absolute_times=False):
     all_curves_for_this_person = {}
 
     for l_r, clips in enumerate(xy_clippings_both):
@@ -412,7 +412,7 @@ def generate_action_plots(action_trials_, xy_clippings_both, skip_trials=[], ref
                         this_action_name= action
                     else:
                         this_action_name = matching_actions[0]
-                this_trial = TrialData(file)
+                this_trial = TrialData(file, remove_time_offset=use_absolute_times)
 
                 data = this_trial.data
 
@@ -764,15 +764,22 @@ class TrialData:
         ### find the size of the header:
         header_line_count = 0
         in_degrees=False
+        sepsep = '\t' ## this is actually a tsv, but not a lot of people use this name i guess
         with open(file,'r') as f:
             a_line = ''
             while not 'endheader' in a_line:
                 a_line = f.readline()
+                if not a_line: ## this means I have reached the end, i think
+                    logger.warning("did not find endheader. will treat this like a normal csv with a single line header")
+                    header_line_count = 0
+                    sepsep = ','
+                    remove_time_offset=False
+                    break
                 if "inDegrees=" in a_line and "yes" in a_line:
                     in_degrees=True
                 header_line_count+=1
 
-        self.data = pd.read_csv (file, sep = '\t', skiprows=header_line_count)
+        self.data = pd.read_csv (file, sep = sepsep, skiprows=header_line_count)
         if remove_time_offset: #remove time ofset
             self.data["time"] = self.data["time"] - self.data["time"][0]
         for col in self.data.columns:
@@ -783,6 +790,9 @@ class TrialData:
                     self.data[col] =  self.data[col]/180.0*np.pi
                 else:
                     self.data[col] =  self.data[col]
+        ## let's create some consistency here
+        logger.warning("I am making column names lowercase btw!")
+        self.data.rename(columns=str.lower, inplace=True)
 
     def trim_time(self, start_time, end_time):
         #df = df[(df['closing_price'] >= 99) & (df['closing_price'] <= 101)]
@@ -801,14 +811,14 @@ class TrialData:
             return self.data.loc[:,cols].values
         
         
-def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_prefix="knee_angle", conv_names=None,left_or_right=0, curve_suffix=""):
+def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_prefix="knee_angle", conv_names=None,left_or_right=0, curve_suffix="",use_absolute_times=False):
     xy_joint_or_muscles = ({},{})
     for i_file, file in enumerate(some_action_trials):
         if i_file in skip_trials:
             print("skipping file: %s"%file)
             continue
 
-        this_trial = TrialData(file)
+        this_trial = TrialData(file, remove_time_offset=use_absolute_times)
         #this_trial.trim_time(time_start[i_file], time_end[i_file] )
 
         data = this_trial.data
@@ -823,6 +833,7 @@ def generate_somejoint_or_muscle_curves(some_action_trials, skip_trials, curve_p
                 for l_r, joint_or_muscle_suffix in enumerate(joint_or_muscle_name_suffix):
                     joint_or_muscle_complete_name = joint_or_muscle_name+joint_or_muscle_suffix + curve_suffix
 
+                    logger.info(joint_or_muscle_complete_name)
                     #print(joint_or_muscle_complete_name)
                     if joint_or_muscle_complete_name==f"{curve_prefix}_r{curve_suffix}":
                         y = data[joint_or_muscle_complete_name]*ref_name["scale"][1]
@@ -943,12 +954,21 @@ def reshape_curves(curves, PLOT_IT=False, lower_lim = None, upper_lim = None): #
     #print(max_len)
     xi = np.linspace(lower_lim,upper_lim, num=max_len)
     for curve in curves:
-        fy =  interpolate.interp1d(curve[0],curve[1])
-        new_curves.append(fy(xi))
+        try:
+            fy =  interpolate.interp1d(curve[0],curve[1])
+            new_curves.append(fy(xi))
+        except:
+            print(len(curve[0]))
+            print(len(curve[1]))
+            print(curve[0])
+            print(curve[1])
+            raise()
+
     if PLOT_IT:
         for yi in new_curves:
             plt.plot(xi,yi)
         plt.show()
+   
     return xi, np.array(new_curves)
 
 #a = reshape_curves(normalize_steps(steps))
@@ -1301,3 +1321,142 @@ def extend_y(x, percent=60):
     return compressed
 
 #compress_x([1,2,3])
+
+import numpy as np
+from scipy import interpolate
+from sklearn.metrics import root_mean_squared_error
+
+
+def rmse(graphs, PLOT_IT=False):
+    def from_x_yyy_to_xy_xy_xy(x,y):
+        a = []
+        #print(x)
+        #print("mulllll")
+        #print(y.shape)
+        #return
+        for i in range(y.shape[0]):
+            X = x
+            Y = y[i,:]
+            assert(len(X)==len(Y))
+            a.append([X,Y])
+        return a
+
+
+    def pick_measured_curves(axc):
+        for k in axc.curves_dic.keys():
+            #print(k)
+            pass
+        #axc.curves_dic[k][0] # curves, this has the length of the number of trials, and the then each curve with their different x values
+        #print(len(axc.curves_dic[k][0]))
+        #print(axc.curves_dic[k][0][0])
+        #return
+        #axc.curves_dic[k][1] # reference plotting parameters
+        #print(axc.curves_dic[k][1])
+        #axc.curves_dic[k][2] # side, 0 = left, 1, right
+        a = []
+        for trial in axc.curves_dic[k][0]:
+            a.extend(from_x_yyy_to_xy_xy_xy(trial[0],trial[1]))
+        #print(len(a))
+        #print(len(a[0]))
+        xi, yi =  reshape_curves(a)
+        return xi,yi #, axc.curves_dic[k][1]['name']
+
+    def strip_ends(some_name):
+        if some_name[-2:] == "_l" or some_name[-2:] == "_r" :
+            return some_name[:-2]
+        return some_name
+    
+    def pick_ref(axc):
+        for k in axc.curves_dic.keys():
+            #print(k)
+            pass
+        #print(axc.curves_dic[k][1]['name'])
+        this_my_ref = axc.reference.reference_curve_dict[axc.curves_dic[k][1]['name']]
+        if len(this_my_ref) >1:
+            raise("if you have multiple references you have to think about what you are doing")
+        #return this_my_ref[0].x, this_my_ref[0].Y
+        #a = []
+        #print(this_my_ref[0].Y.shape)
+        #print(this_my_ref[0].x.shape)
+        #for curve in range(this_my_ref[0].Y.shape[0]):
+        #     a.extend((this_my_ref[0].x,a.append(this_my_ref[0].Y[curve,:])))
+        #print(this_my_ref[0].Y.shape)
+        #print(this_my_ref[0].x.shape)
+
+        return this_my_ref[0].x, this_my_ref[0].Y
+    
+    ### we create a new dictionary
+    
+    damnit = {}
+    
+    
+    #first we create a dict
+    tf = {}
+    
+    for acx in graphs:
+        #print("KLFGERJWNLFGIKEJWRLGIKHWSERJKGKJDFGNSLKJJ,NDSKFJN")
+        ISIK = False
+        ISID = False
+        ISSO = False
+        for k in acx.curves_dic.keys():
+            #print(k)
+            pass
+    
+        #print(k)
+        n = acx.curves_dic[k][1]['yaxis_name']
+        if "Angle" in n:
+            ISIK = True
+            eends = "_ik"
+        if "Torque" in n:
+            ISID = True
+            eends = "_id"
+        if "Activation" in n:
+            ISSO = True
+            eends = "_so"
+            
+        real_name = strip_ends(k)+eends
+        bb = pick_ref(acx)
+        
+        
+        aa_ = pick_measured_curves(acx) ## this can be left or right!
+        if real_name in tf.keys():
+            g = tf[real_name]
+            aa = [g[0],g[1]]
+            a = []
+            for trial in aa[1]:
+                #a.extend(from_x_yyy_to_xy_xy_xy(aa[0],trial))
+                a.append([aa[0],trial])
+            for trial in aa_[1]:
+                #a.extend(from_x_yyy_to_xy_xy_xy(aa_[0],trial))
+                a.append([aa_[0],trial])
+            aa_ =  reshape_curves(a)
+        tf.update({real_name:[aa_[0],aa_[1],bb]})
+        #so we need to put them 2 together
+    str_ = ""
+    for real_name, (g0, g1, bb) in tf.items():
+        
+        if False:
+            for c in bb[1]:
+                plt.plot(bb[0]/100,c)
+            for c in aa[1]:
+                plt.plot(aa[0],c)
+            plt.plot(aa[0],aa[1].mean(axis=0)) # measured
+            plt.plot(bb[0]/100,bb[1].mean(axis=0)) # reference
+
+
+        x, c = reshape_curves([[g0, g1.mean(axis = 0)],
+                                       [bb[0]/100, bb[1].mean(axis = 0)],
+                                      ])
+        measured_curve_mean = c[0]
+        reference_curve_mean = c[1]
+
+        if PLOT_IT:
+            plt.plot(x,measured_curve_mean,label='measured')
+            plt.plot(x,reference_curve_mean,label='reference')
+            plt.legend()
+            print(real_name)
+            plt.show()
+        str_ += f"{real_name: <{20}} & {root_mean_squared_error(measured_curve_mean,reference_curve_mean): <{20}} \\\\ \n"
+        
+    return str_
+

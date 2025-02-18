@@ -95,55 +95,55 @@ def get_ik_short_graph_params():
 
 def get_so_graph_params():
     return {
-            'glut_med1':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Med1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,0],'offset':0,'scale':(1,1)},
-            'glut_med2':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Med2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,1],'offset':0,'scale':(1,1)},
-            'glut_med3':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Med3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,2],'offset':0,'scale':(1,1)},
-            'glut_min1':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Min1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,0],'offset':0,'scale':(1,1)},
-            'glut_min2':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Min2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,1],'offset':0,'scale':(1,1)},
-            'glut_min3':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Min3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,2],'offset':0,'scale':(1,1)},
-            'semimem':	{'name':r'Muscle_Ref_NameXXX','title':"Semimembranosus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[2,0],'offset':0,'scale':(1,1)},
-            'semiten':	{'name':r'Muscle_Ref_NameXXX','title':"Semitendineus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[2,1],'offset':0,'scale':(1,1)},
-            'bifemlh':	{'name':r'Muscle_Ref_NameXXX','title':"biceps femoris lh",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[2,2],'offset':0,'scale':(1,1)},
-            'bifemsh':	{'name':r'Muscle_Ref_NameXXX','title':"biceps femoris sh",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[3,0],'offset':0,'scale':(1,1)},
-            'sar':		{'name':r'Muscle_Ref_NameXXX','title':"sartoreus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[3,1],'offset':0,'scale':(1,1)},
-            'add_long':	{'name':r'Muscle_Ref_NameXXX','title':"add longus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[3,2],'offset':0,'scale':(1,1)},
-            'add_brev':	{'name':r'Muscle_Ref_NameXXX','title':"add brevis",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[4,0],'offset':0,'scale':(1,1)},
-            'add_mag1':	{'name':r'Muscle_Ref_NameXXX','title':"add mag1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[4,1],'offset':0,'scale':(1,1)},
-            'add_mag2':	{'name':r'Muscle_Ref_NameXXX','title':"add mag2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[4,2],'offset':0,'scale':(1,1)},
-            'add_mag3':	{'name':r'Muscle_Ref_NameXXX','title':"add mag3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[5,0],'offset':0,'scale':(1,1)},
-            'tfl':		{'name':r'Muscle_Ref_NameXXX','title':"tfl",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[5,1],'offset':0,'scale':(1,1)},
-            'pect':		{'name':r'Muscle_Ref_NameXXX','title':"pect",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[5,2],'offset':0,'scale':(1,1)},
-            'grac':		{'name':r'Muscle_Ref_NameXXX','title':"gracius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[6,0],'offset':0,'scale':(1,1)},
-            'glut_max1':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Max1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[6,1],'offset':0,'scale':(1,1)},
-            'glut_max2':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Max2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[6,2],'offset':0,'scale':(1,1)},
-            'glut_max3':	{'name':r'Muscle_Ref_NameXXX','title':"Gluteus Max1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[7,0],'offset':0,'scale':(1,1)},
-            'iliacus':	{'name':r'Muscle_Ref_NameXXX','title':"iliacus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[7,1],'offset':0,'scale':(1,1)},
-            'psoas':	{'name':r'Muscle_Ref_NameXXX','title':"psoas",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[7,2],'offset':0,'scale':(1,1)},
-            'quad_fem':	{'name':r'Muscle_Ref_NameXXX','title':"quadratus femoris",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[8,0],'offset':0,'scale':(1,1)},
-            'gem':		{'name':r'Muscle_Ref_NameXXX','title':"gem",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[8,1],'offset':0,'scale':(1,1)},
-            'peri':		{'name':r'Muscle_Ref_NameXXX','title':"peri",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[8,2],'offset':0,'scale':(1,1)},
-            'rect_fem':	{'name':r'Muscle_Ref_NameXXX','title':"rect fem",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[9,0],'offset':0,'scale':(1,1)},
-            'vas_med':	{'name':r'Muscle_Ref_NameXXX','title':"vastus med",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[9,1],'offset':0,'scale':(1,1)},
-            'vas_int':	{'name':r'Muscle_Ref_NameXXX','title':"vastus int",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[9,2],'offset':0,'scale':(1,1)},
-            'vas_lat':	{'name':r'Muscle_Ref_NameXXX','title':"vastus lt",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[10,0],'offset':0,'scale':(1,1)},
-            'med_gas':	{'name':r'Muscle_Ref_NameXXX','title':"Medial Gastrocnemius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[10,1],'offset':0,'scale':(1,1)},
-            'lat_gas':	{'name':r'Muscle_Ref_NameXXX','title':"Lateral Gastrocnemius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[10,2],'offset':0,'scale':(1,1)},
-            'soleus':	{'name':r'Muscle_Ref_NameXXX','title':"Soleus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,0],'offset':0,'scale':(1,1)},
-            'tib_post':	{'name':r'Muscle_Ref_NameXXX','title':"Tibialis Post.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,1],'offset':0,'scale':(1,1)},
-            'flex_dig':	{'name':r'Muscle_Ref_NameXXX','title':"Flex. dig.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,2],'offset':0,'scale':(1,1)},
-            'flex_hal':	{'name':r'Muscle_Ref_NameXXX','title':"Flex. Hal.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,0],'offset':0,'scale':(1,1)},
-            'tib_ant':	{'name':r'Muscle_Ref_NameXXX','title':"Tibialis Ant.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,1],'offset':0,'scale':(1,1)},
-            'per_brev':	{'name':r'Muscle_Ref_NameXXX','title':"per Brev",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,2],'offset':0,'scale':(1,1)},
-            'per_long':	{'name':r'Muscle_Ref_NameXXX','title':"per Long",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,0],'offset':0,'scale':(1,1)},
-            'per_tert':	{'name':r'Muscle_Ref_NameXXX','title':"per tert",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,1],'offset':0,'scale':(1,1)},
-            'ext_dig':	{'name':r'Muscle_Ref_NameXXX','title':"Ext. Digi.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,2],'offset':0,'scale':(1,1)},
-            'ext_hal':	{'name':r'Muscle_Ref_NameXXX','title':"Ext. Halux",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,0],'offset':0,'scale':(1,1)},
-            'ercspn':	{'name':r'Muscle_Ref_NameXXX','title':"ercspn",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,1],'offset':0,'scale':(1,1)},
-            'intobl':	{'name':r'Muscle_Ref_NameXXX','title':"intobl",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,2],'offset':0,'scale':(1,1)},
-            'extobl':	{'name':r'Muscle_Ref_NameXXX','title':"extobl",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[15,0],'offset':0,'scale':(1,1)}
+            'glut_med1':	{'name':'Muscle_Ref_glut_med1','title':"Gluteus Med1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,0],'offset':0,'scale':(1,1)},
+            'glut_med2':	{'name':'Muscle_Ref_glut_med2','title':"Gluteus Med2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,1],'offset':0,'scale':(1,1)},
+            'glut_med3':	{'name':'Muscle_Ref_glut_med3','title':"Gluteus Med3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[0,2],'offset':0,'scale':(1,1)},
+            'glut_min1':	{'name':'Muscle_Ref_glut_min1','title':"Gluteus Min1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,0],'offset':0,'scale':(1,1)},
+            'glut_min2':	{'name':'Muscle_Ref_glut_min2','title':"Gluteus Min2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,1],'offset':0,'scale':(1,1)},
+            'glut_min3':	{'name':'Muscle_Ref_glut_min3','title':"Gluteus Min3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[1,2],'offset':0,'scale':(1,1)},
+            'semimem':	{'name':'Muscle_Ref_semimem','title':"Semimembranosus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[2,0],'offset':0,'scale':(1,1)},
+            'semiten':	{'name':'Muscle_Ref_semiten','title':"Semitendineus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[2,1],'offset':0,'scale':(1,1)},
+            'bifemlh':	{'name':'Muscle_Ref_bifemlh','title':"biceps femoris lh",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[2,2],'offset':0,'scale':(1,1)},
+            'bifemsh':	{'name':'Muscle_Ref_bifemsh','title':"biceps femoris sh",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[3,0],'offset':0,'scale':(1,1)},
+            'sar':		{'name':'Muscle_Ref_sar','title':"sartoreus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[3,1],'offset':0,'scale':(1,1)},
+            'add_long':	{'name':'Muscle_Ref_add_long','title':"add longus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[3,2],'offset':0,'scale':(1,1)},
+            'add_brev':	{'name':'Muscle_Ref_add_brev','title':"add brevis",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[4,0],'offset':0,'scale':(1,1)},
+            'add_mag1':	{'name':'Muscle_Ref_add_mag1','title':"add mag1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[4,1],'offset':0,'scale':(1,1)},
+            'add_mag2':	{'name':'Muscle_Ref_add_mag2','title':"add mag2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[4,2],'offset':0,'scale':(1,1)},
+            'add_mag3':	{'name':'Muscle_Ref_add_mag3','title':"add mag3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[5,0],'offset':0,'scale':(1,1)},
+            'tfl':		{'name':'Muscle_Ref_tfl','title':"tfl",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[5,1],'offset':0,'scale':(1,1)},
+            'pect':		{'name':'Muscle_Ref_pect','title':"pect",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[5,2],'offset':0,'scale':(1,1)},
+            'grac':		{'name':'Muscle_Ref_grac','title':"gracius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[6,0],'offset':0,'scale':(1,1)},
+            'glut_max1':	{'name':'Muscle_Ref_glut_max1','title':"Gluteus Max1",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[6,1],'offset':0,'scale':(1,1)},
+            'glut_max2':	{'name':'Muscle_Ref_glut_max2','title':"Gluteus Max2",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[6,2],'offset':0,'scale':(1,1)},
+            'glut_max3':	{'name':'Muscle_Ref_glut_max3','title':"Gluteus Max3",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[7,0],'offset':0,'scale':(1,1)},
+            'iliacus':	{'name':'Muscle_Ref_iliacus','title':"iliacus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[7,1],'offset':0,'scale':(1,1)},
+            'psoas':	{'name':'Muscle_Ref_psoas','title':"psoas",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[7,2],'offset':0,'scale':(1,1)},
+            'quad_fem':	{'name':'Muscle_Ref_quad_fem','title':"quadratus femoris",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[8,0],'offset':0,'scale':(1,1)},
+            'gem':		{'name':'Muscle_Ref_gem','title':"gem",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[8,1],'offset':0,'scale':(1,1)},
+            'peri':		{'name':'Muscle_Ref_peri','title':"peri",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[8,2],'offset':0,'scale':(1,1)},
+            'rect_fem':	{'name':'Muscle_Ref_rect_fem','title':"rect fem",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[9,0],'offset':0,'scale':(1,1)},
+            'vas_med':	{'name':'Muscle_Ref_vas_med','title':"vastus med",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[9,1],'offset':0,'scale':(1,1)},
+            'vas_int':	{'name':'Muscle_Ref_vas_int','title':"vastus int",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[9,2],'offset':0,'scale':(1,1)},
+            'vas_lat':	{'name':'Muscle_Ref_vas_lat','title':"vastus lt",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[10,0],'offset':0,'scale':(1,1)},
+            'med_gas':	{'name':'Muscle_Ref_med_gas','title':"Medial Gastrocnemius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[10,1],'offset':0,'scale':(1,1)},
+            'lat_gas':	{'name':'Muscle_Ref_lat_gas','title':"Lateral Gastrocnemius",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[10,2],'offset':0,'scale':(1,1)},
+            'soleus':	{'name':'Muscle_Ref_soleus','title':"Soleus",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,0],'offset':0,'scale':(1,1)},
+            'tib_post':	{'name':'Muscle_Ref_tib_post','title':"Tibialis Post.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,1],'offset':0,'scale':(1,1)},
+            'flex_dig':	{'name':'Muscle_Ref_flex_dig','title':"Flex. dig.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[11,2],'offset':0,'scale':(1,1)},
+            'flex_hal':	{'name':'Muscle_Ref_flex_hal','title':"Flex. Hal.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,0],'offset':0,'scale':(1,1)},
+            'tib_ant':	{'name':'Muscle_Ref_tib_ant','title':"Tibialis Ant.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,1],'offset':0,'scale':(1,1)},
+            'per_brev':	{'name':'Muscle_Ref_per_brev','title':"per Brev",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[12,2],'offset':0,'scale':(1,1)},
+            'per_long':	{'name':'Muscle_Ref_per_long','title':"per Long",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,0],'offset':0,'scale':(1,1)},
+            'per_tert':	{'name':'Muscle_Ref_per_tert','title':"per tert",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,1],'offset':0,'scale':(1,1)},
+            'ext_dig':	{'name':'Muscle_Ref_ext_dig','title':"Ext. Digi.",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[13,2],'offset':0,'scale':(1,1)},
+            'ext_hal':	{'name':'Muscle_Ref_ext_hal','title':"Ext. Halux",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,0],'offset':0,'scale':(1,1)},
+            'ercspn':	{'name':'Muscle_Ref_ercspn','title':"ercspn",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,1],'offset':0,'scale':(1,1)},
+            'intobl':	{'name':'Muscle_Ref_intobl','title':"intobl",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[14,2],'offset':0,'scale':(1,1)},
+            'extobl':	{'name':'Muscle_Ref_extobl','title':"extobl",'plot_it':True,'axes_limits':[0,1.1],'yaxis_name':r"Activation",'position':[15,0],'offset':0,'scale':(1,1)}
             }
 
-def get_so_short_graph_params():
+def get_so_short_graph_params(use_paper_list=False, use_rename_list=True):
     so_full = get_so_graph_params()
     so_short = {}
     leg_list = {
@@ -166,13 +166,35 @@ def get_so_short_graph_params():
             'soleus':[1,1],
             'tib_ant':[1,0],
             }
-    for muscle, pos in short_list.items():
+    paper_list = {
+            'tib_ant':[0,0],
+            'med_gas':[0,1],
+            'soleus':[0,2],
+            'glut_max1':[1,0],
+            'vas_med':[1,1]
+            }
+
+    rename_list = {}
+
+    use_list = short_list
+    if use_paper_list:
+        use_list = paper_list
+        if use_rename_list:
+            rename_list = {'glut_max1':'glu_max'}
+
+    for muscle, pos in use_list.items():
         this_val = so_full[muscle]
         this_val['position'] = pos
-        so_short.update({muscle:this_val})
+        if muscle in rename_list:
+            so_short.update({rename_list[muscle]:this_val})
+        else:
+            so_short.update({muscle:this_val})
     return so_short
 
 def get_so_even_smaller():
+    return get_so_short_graph_params(use_paper_list=True, use_rename_list=False)
+
+def get_so_even_smaller_old():
     return {
  'med_gas': {'name': 'Muscle_Ref_NameXXX',
   'title': 'Medial Gastrocnemius',
